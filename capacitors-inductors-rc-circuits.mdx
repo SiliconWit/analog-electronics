@@ -1,0 +1,354 @@
+---
+title: "Capacitors, Inductors, and RC/RL Circuits"
+description: "Understand capacitors and inductors as energy storage elements. Learn time constants, charging and discharging curves, and RC/RL circuit behavior. Build an RC filter on a breadboard and measure the time constant."
+contributors: "sam-macharia"
+pubDate: 2026-03-03
+tags: ["analog-electronics", "capacitors", "inductors", "rc-circuit", "time-constant", "filtering"]
+excerpt: "Capacitors and inductors introduce time-dependent behavior to circuits. Learn charging curves, time constants, and energy storage. Build an RC filter and see how it smooths a square wave, the same principle behind every decoupling capacitor on your PCB."
+heroImage: "https://cdn.siliconwit.com/education/analog-electronics/capacitors-inductors-rc-circuits.png"
+---
+
+import TawkWidget from '../../../../components/TawkWidget.astro';
+import UniversalContentContributors from '../../../../components/UniversalContentContributors.astro';
+import InArticleAd from '../../../../components/InArticleAd.astro';
+import Copyright from '../../../../components/Copyright.astro';
+import BionicText from '../../../../components/BionicText.astro';
+import TailwindWrapper from '../../../../components/TailwindWrapper.jsx';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid, Badge, Steps, LinkButton, FileTree } from '@astrojs/starlight/components';
+
+<UniversalContentContributors 
+  contributors={frontmatter.contributors}
+/>
+
+
+
+import AnalogElectronicsComments from '../../../../components/analog-electronics/AnalogElectronicsComments.astro';
+
+Resistors respond instantly to voltage changes. Capacitors and inductors do not. They store energy and release it over time, introducing the concept of time-dependent behavior that is fundamental to filtering, timing, power supply smoothing, and signal processing. Every decoupling capacitor on your microcontroller PCB, every debounce circuit on a button input, and every switching power supply relies on these components. #AnalogElectronics #Capacitors #RCCircuits
+
+## Capacitors: Storing Charge
+
+A capacitor stores energy in an electric field between two conductive plates separated by an insulating material (the dielectric). Think of it as a small rechargeable bucket for electrical charge.
+
+### The Water Tank Analogy
+
+If voltage is water pressure and current is water flow, a capacitor is a flexible membrane stretched across a pipe. When pressure is applied, the membrane stretches and stores energy. When the pressure source is removed, the membrane pushes back, releasing the stored energy. The membrane cannot pass a steady flow (DC is blocked), but it transmits pressure changes (AC passes through).
+
+### Capacitance
+
+Capacitance is measured in farads (F). One farad is a very large capacitance. In practice, we work with:
+
+| Unit | Symbol | Value |
+|------|--------|-------|
+| Microfarad | $\mu F$ | $10^{-6}\,F$ |
+| Nanofarad | $nF$ | $10^{-9}\,F$ |
+| Picofarad | $pF$ | $10^{-12}\,F$ |
+
+The charge stored on a capacitor is:
+
+$$Q = C \times V$$
+
+Where $Q$ is charge in coulombs, $C$ is capacitance in farads, and $V$ is voltage across the capacitor.
+
+### Energy Stored
+
+The energy stored in a charged capacitor is:
+
+$$E = \frac{1}{2} C V^2$$
+
+This energy is released when the capacitor discharges. A 1000 $\mu F$ capacitor charged to 5V stores:
+
+$$E = \frac{1}{2} \times 0.001 \times 25 = 0.0125\,J = 12.5\,mJ$$
+
+That might seem small, but it is enough to damage sensitive ICs if discharged through them suddenly.
+
+## Capacitor Types
+
+<InArticleAd />
+
+
+Different dielectric materials give capacitors different properties. Here are the types you will encounter most often.
+
+<CardGrid>
+  <Card title="Ceramic Capacitors" icon="star">
+    Small, cheap, non-polarized. Available from 1 pF to about 10 $\mu F$. Excellent for high-frequency decoupling and filtering. The 100 nF ceramic capacitor is the most commonly used decoupling cap in digital circuits.
+  </Card>
+
+  <Card title="Electrolytic Capacitors" icon="setting">
+    Polarized (positive and negative leads). Available from 1 $\mu F$ to thousands of $\mu F$. Used for bulk energy storage and power supply filtering. The longer lead is positive. Connecting them backwards can cause failure or even a small explosion.
+  </Card>
+
+  <Card title="Film Capacitors" icon="document">
+    Non-polarized, stable, low loss. Good for audio circuits and precision timing. More expensive and physically larger than ceramics of the same value.
+  </Card>
+</CardGrid>
+
+**Rule of thumb for MCU circuits**: Place a 100 nF ceramic capacitor as close as possible to every VCC/GND pin pair on your microcontroller. Add a 10 $\mu F$ electrolytic near the power input. This handles both high-frequency and low-frequency power supply noise.
+
+## The RC Circuit: Charging and Discharging
+
+<InArticleAd />
+
+
+When you connect a resistor in series with a capacitor and apply a voltage, the capacitor charges gradually. This is the RC circuit, and its behavior is governed by the time constant.
+
+### Time Constant
+
+The time constant $\tau$ (tau) of an RC circuit is:
+
+$$\tau = R \times C$$
+
+The time constant has units of seconds. It represents the time it takes for the capacitor to charge to about 63.2% of the applied voltage, or discharge to about 36.8% of its initial voltage.
+
+### Charging Equation
+
+When a voltage $V_0$ is applied through a resistor $R$ to an initially uncharged capacitor $C$:
+
+$$V_C(t) = V_0 \left(1 - e^{-t/\tau}\right)$$
+
+The current during charging is:
+
+$$I(t) = \frac{V_0}{R} \cdot e^{-t/\tau}$$
+
+At $t = 0$, the capacitor acts like a short circuit (maximum current, zero voltage). As time passes, the voltage across the capacitor rises while the current drops.
+
+| Time | Voltage | Percentage of $V_0$ |
+|------|---------|---------------------|
+| $1\tau$ | $0.632 \times V_0$ | 63.2% |
+| $2\tau$ | $0.865 \times V_0$ | 86.5% |
+| $3\tau$ | $0.950 \times V_0$ | 95.0% |
+| $5\tau$ | $0.993 \times V_0$ | 99.3% |
+
+After $5\tau$, the capacitor is considered fully charged (99.3%). This "5 time constants" rule is widely used in engineering.
+
+### Discharging Equation
+
+When a charged capacitor discharges through a resistor:
+
+$$V_C(t) = V_0 \cdot e^{-t/\tau}$$
+
+The voltage decays exponentially. After $5\tau$, the capacitor is essentially fully discharged.
+
+### Worked Example: Timing Calculation
+
+Calculate the time constant and charging time for $R = 10k\Omega$ and $C = 100\mu F$:
+
+$$\tau = R \times C = 10{,}000 \times 0.0001 = 1\,\text{second}$$
+
+Time to fully charge (to 99.3%): $5\tau = 5$ seconds.
+
+If you change $R$ to $1k\Omega$: $\tau = 0.1$ seconds, full charge in 0.5 seconds.
+
+If you change $C$ to $10\mu F$ (with $R = 10k\Omega$): $\tau = 0.1$ seconds, full charge in 0.5 seconds.
+
+Either decreasing the resistance or decreasing the capacitance makes the circuit respond faster.
+
+## Inductors: Storing Energy in a Magnetic Field
+
+<InArticleAd />
+
+
+An inductor stores energy in a magnetic field created by current flowing through a coil of wire. While capacitors resist changes in voltage, inductors resist changes in current.
+
+### Inductance
+
+Inductance is measured in henrys (H). Common values:
+
+| Unit | Symbol | Value |
+|------|--------|-------|
+| Millihenry | $mH$ | $10^{-3}\,H$ |
+| Microhenry | $\mu H$ | $10^{-6}\,H$ |
+
+The voltage across an inductor is:
+
+$$V_L = L \frac{dI}{dt}$$
+
+This means an inductor generates a voltage that opposes any change in current. If you try to suddenly stop current through an inductor, it produces a large voltage spike. This is why flyback diodes are essential when switching inductive loads (motors, relays, solenoids).
+
+### Energy Stored in an Inductor
+
+$$E = \frac{1}{2} L I^2$$
+
+### RL Circuit Time Constant
+
+For a resistor-inductor (RL) circuit:
+
+$$\tau = \frac{L}{R}$$
+
+The current in an RL circuit rises exponentially when voltage is applied, and decays exponentially when removed, following the same $1 - e^{-t/\tau}$ and $e^{-t/\tau}$ patterns as the RC circuit.
+
+## Capacitors in Series and Parallel
+
+<InArticleAd />
+
+
+### Capacitors in Parallel
+
+Capacitors in parallel add directly (the opposite of resistors):
+
+$$C_{total} = C_1 + C_2 + C_3 + \cdots$$
+
+This makes intuitive sense: connecting capacitors in parallel combines their plate areas, increasing total capacitance.
+
+### Capacitors in Series
+
+Capacitors in series combine using the reciprocal formula (like resistors in parallel):
+
+$$\frac{1}{C_{total}} = \frac{1}{C_1} + \frac{1}{C_2} + \frac{1}{C_3} + \cdots$$
+
+Series capacitors are less common in practice, but they appear in voltage multiplier circuits and impedance matching.
+
+## RC Filter: Low-Pass Behavior
+
+<InArticleAd />
+
+
+An RC circuit naturally acts as a filter. When a resistor is connected in series and a capacitor to ground, the circuit passes low-frequency signals and attenuates high-frequency signals. This is a low-pass filter.
+
+The cutoff frequency is:
+
+$$f_c = \frac{1}{2\pi R C}$$
+
+Below this frequency, signals pass through mostly unchanged. Above it, signals are progressively attenuated. We will explore filters in detail in Lesson 7, but the key concept to understand now is that the RC time constant determines the filter's behavior.
+
+### Square Wave Example
+
+If you feed a square wave into an RC low-pass filter:
+- If the square wave frequency is much lower than $f_c$, the output looks like the input (a clean square wave)
+- If the frequency is near $f_c$, the sharp edges get rounded
+- If the frequency is much higher than $f_c$, the output is nearly flat (the signal is almost completely attenuated)
+
+This is exactly what happens with decoupling capacitors on a PCB. The capacitor (combined with the trace resistance) forms a low-pass filter that smooths out high-frequency power supply noise while passing the DC supply voltage unchanged.
+
+## Practical Build: RC Circuit with LED Indicator
+
+<InArticleAd />
+
+
+### Components Needed
+
+| Component | Quantity | Notes |
+|-----------|----------|-------|
+| Breadboard | 1 | From Lesson 1 |
+| 5V power source | 1 | USB or battery |
+| Resistors: 1k, 10k, 100k ohm | 1 each | 1/4 watt |
+| Capacitors: 10 $\mu F$, 100 $\mu F$, 470 $\mu F$ electrolytic | 1 each | 16V or higher rated |
+| Capacitor: 100 nF ceramic | 2 | For decoupling demo |
+| LED (red) | 1 | For visual charge indicator |
+| 220 ohm resistor | 1 | For LED current limit |
+| Push button | 1 | Momentary, normally open |
+| Digital multimeter | 1 | DC voltage mode |
+| Jumper wires | Several | Male-to-male |
+
+### Circuit: Visible Charging and Discharging
+
+This circuit lets you see a capacitor charge and discharge slowly enough to observe with the naked eye.
+
+<Steps>
+1. **Build the charging circuit**
+   Connect a 100k ohm resistor from the 5V rail to a breadboard row. Connect a 470 $\mu F$ electrolytic capacitor from that row to ground. Make sure the capacitor's positive lead (longer leg) connects to the resistor side. Connect an LED with a 220 ohm resistor from the capacitor's positive side to ground (in parallel with the 470 $\mu F$ cap).
+
+2. **Calculate the time constant**
+   $\tau = 100{,}000 \times 0.00047 = 47$ seconds. Full charge time: about 235 seconds (roughly 4 minutes). This is intentionally slow so you can watch it happen.
+
+3. **Apply power and observe**
+   Connect 5V. The LED will be dim at first and gradually brighten over several minutes as the capacitor charges and the voltage across it rises.
+
+4. **Measure voltage over time**
+   Use your multimeter to measure the voltage across the capacitor at 30-second intervals. Record the values. After one time constant (47 seconds), you should read approximately $5 \times 0.632 = 3.16V$.
+
+5. **Disconnect power and observe discharge**
+   Remove the 5V connection. The LED will stay lit and gradually dim as the capacitor discharges through the LED and its resistor. The discharge time constant depends on the parallel resistance of the LED circuit.
+
+6. **Try a faster circuit**
+   Replace the 100k resistor with 10k. Now $\tau = 4.7$ seconds, and you can see the full charge in about 24 seconds. The LED brightens much faster.
+
+7. **Compare capacitor values**
+   Swap the 470 $\mu F$ capacitor for 100 $\mu F$ (with the 10k resistor). Now $\tau = 1$ second. The LED reaches full brightness almost immediately.
+</Steps>
+
+### Recording Your Measurements
+
+| Time (s) | Predicted Voltage (100k + 470uF) | Measured Voltage |
+|----------|----------------------------------|-----------------|
+| 0 | 0V | ________ |
+| 10 | 0.96V | ________ |
+| 20 | 1.72V | ________ |
+| 47 ($1\tau$) | 3.16V | ________ |
+| 94 ($2\tau$) | 4.33V | ________ |
+| 141 ($3\tau$) | 4.75V | ________ |
+| 235 ($5\tau$) | 4.97V | ________ |
+
+Your measured values will not match the predictions exactly. Component tolerances (typically 10 to 20% for electrolytic capacitors), multimeter loading, and LED current draw all introduce small differences. If your measurements are within 20% of the predicted values, your circuit is working correctly.
+
+## Decoupling Capacitor Demonstration
+
+<InArticleAd />
+
+
+If you have access to a microcontroller board and an oscilloscope (or a logic analyzer with analog input), try this:
+
+<Steps>
+1. **Remove the decoupling capacitor** from the VCC pin of a microcontroller on a breadboard setup.
+
+2. **Observe the power rail** on the oscilloscope. You will see voltage spikes and dips every time the MCU switches its GPIO pins or runs code that draws variable current.
+
+3. **Add a 100 nF ceramic capacitor** right at the VCC and GND pins.
+
+4. **Observe again.** The noise is dramatically reduced. The capacitor acts as a tiny local energy reserve, supplying current during brief demand spikes and absorbing excess during quiet periods.
+</Steps>
+
+This is why every MCU datasheet specifies decoupling capacitors. Without them, the power supply noise can cause erratic behavior, random resets, or corrupted ADC readings.
+
+## Common Mistakes
+
+<InArticleAd />
+
+
+<Card title="Watch Out For These" icon="warning">
+- **Reversed electrolytic capacitor**: Electrolytic capacitors are polarized. Connecting them backwards can cause them to overheat, leak, or fail violently. Always check the polarity markings.
+- **Forgetting to discharge capacitors**: Large capacitors retain their charge after power is removed. Before working on a circuit, short the capacitor through a resistor to discharge it safely. Never short a large capacitor directly; the surge current can damage components or weld contacts.
+- **Ignoring voltage ratings**: A capacitor rated for 10V used in a 12V circuit will eventually fail. Always choose a capacitor with a voltage rating at least 1.5 to 2 times the maximum expected voltage.
+- **Using the wrong type**: Ceramic capacitors change capacitance with applied voltage and temperature (especially high-value X5R/Y5V types). For timing circuits, use film or C0G/NP0 ceramics for stability.
+</Card>
+
+## How This Connects to Embedded Systems
+
+<InArticleAd />
+
+
+<Card title="Capacitors Are Everywhere in MCU Circuits" icon="rocket">
+- **Decoupling capacitors**: Every IC needs them. A 100 nF ceramic at each VCC pin and a 10 $\mu F$ bulk capacitor near the power input. Without them, your MCU behaves unpredictably.
+- **RC debouncing**: A simple RC circuit on a button input removes switch bounce that causes spurious interrupts. The time constant is chosen to be longer than the bounce duration (typically 1 to 10 ms).
+- **ADC input filtering**: An RC filter before an ADC pin removes high-frequency noise from sensor readings. The cutoff frequency must be below half the sampling rate (Nyquist frequency).
+- **Reset circuits**: Many MCUs use an RC circuit on the reset pin to hold the chip in reset for a brief period at power-up, ensuring stable supply voltage before code execution begins.
+- **Timing circuits**: The 555 timer (Lesson 8) uses RC time constants to set oscillation frequency. Many simple timing applications still use RC circuits.
+- **PCB layout**: On a PCB, the decoupling capacitor must be placed as physically close to the IC pin as possible, with short, wide traces. The trace itself has inductance, and a long trace defeats the purpose of the capacitor.
+</Card>
+
+## Summary
+
+<InArticleAd />
+
+
+| Concept | Key Equation | Remember |
+|---------|-------------|----------|
+| Capacitance | $Q = CV$ | Charge stored depends on voltage and capacitance |
+| Energy in capacitor | $E = \frac{1}{2}CV^2$ | Stored energy can damage components |
+| RC time constant | $\tau = RC$ | Time to reach 63.2% of final value |
+| Charging | $V(t) = V_0(1 - e^{-t/\tau})$ | Exponential rise, 99.3% at $5\tau$ |
+| Discharging | $V(t) = V_0 \cdot e^{-t/\tau}$ | Exponential decay |
+| Inductance voltage | $V = L \frac{dI}{dt}$ | Opposes current change |
+| RL time constant | $\tau = L/R$ | Same exponential behavior as RC |
+| RC cutoff frequency | $f_c = \frac{1}{2\pi RC}$ | Transition between pass and stop |
+
+Next up: diodes. These one-way valves for current enable rectification, voltage clamping, and protection circuits that keep your microcontroller safe from voltage spikes and reverse polarity.
+
+<AnalogElectronicsComments />
+
+
+
+<InArticleAd />
+<TawkWidget />
+<Copyright />

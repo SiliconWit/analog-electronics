@@ -1,0 +1,162 @@
+---
+title: "Analog Electronics Fundamentals"
+description: "Build a solid foundation in analog electronics with nine hands-on lessons. Covers Ohm's law, capacitors, diodes, transistors, op-amps, power supplies, filters, oscillators, and sensor signal conditioning. Every concept connects directly to embedded systems and PCB design."
+pubDate: 2026-03-01
+tags: ["analog-electronics", "circuit-design", "ohms-law", "transistors", "op-amps", "power-supply", "filters", "sensors", "signal-conditioning", "embedded-systems"]
+excerpt: "Nine practical lessons that build your analog electronics foundation from voltage dividers to sensor signal conditioning. Every topic connects directly to embedded programming and PCB design. Not a prerequisite for other courses, but a reference that makes everything else easier."
+heroImage: "https://cdn.siliconwit.com/education/analog-electronics/analog-electronics-fundamentals.png"
+---
+
+import Copyright from '../../../../components/Copyright.astro';
+import TawkWidget from '../../../../components/TawkWidget.astro';
+import InArticleAd from '../../../../components/InArticleAd.astro';
+import { Card, CardGrid, Badge, Steps, LinkButton } from '@astrojs/starlight/components';
+
+Analog electronics is the foundation beneath every digital system. Your microcontroller runs on a regulated power supply, reads sensor voltages through an ADC, and drives loads through transistor switches. This course gives you the practical knowledge to understand, design, and troubleshoot those analog building blocks. Whether you are just starting out or returning to fill in gaps, these nine lessons will make your embedded projects more reliable and your debugging faster. #AnalogElectronics #CircuitDesign #EmbeddedSystems
+
+## This Is Not a Prerequisite
+
+<Card title="Jump Into Any Course, Come Back When You Need To" icon="information">
+You do **not** need to complete this course before starting the embedded programming, PCB design, or sensor interfacing courses. Those courses are fully self-contained. Think of Analog Electronics Fundamentals as helpful background that will make everything else easier, and as a reference you can return to whenever a circuit concept comes up in another lesson.
+</Card>
+
+If you are already comfortable with Ohm's law and basic components, skip ahead to the topics you need. If you are brand new to electronics, working through these lessons in order will give you a strong foundation.
+
+## Who This Course Is For
+
+<CardGrid>
+  <Card title="Complete Beginners" icon="star">
+    Never touched a breadboard? Start here. Every concept is explained from scratch with real-world analogies before the math appears.
+  </Card>
+
+  <Card title="Software Engineers Moving to Hardware" icon="laptop">
+    You can write firmware, but voltage dividers and decoupling capacitors feel like a foreign language. This course bridges that gap.
+  </Card>
+
+  <Card title="Experienced Engineers Filling Gaps" icon="open-book">
+    You know your way around a soldering iron but want a structured refresher on op-amp configurations, filter design, or power supply fundamentals.
+  </Card>
+
+  <Card title="Students Preparing for Lab Work" icon="setting">
+    University electronics labs move fast. Working through these lessons ahead of time gives you the hands-on confidence to keep up.
+  </Card>
+</CardGrid>
+
+<InArticleAd />
+
+## Lessons
+
+<CardGrid>
+  <Card title="Lesson 1: Voltage, Current, and Resistance" icon="star">
+    [Voltage, Current, and Resistance](./voltage-current-resistance). Ohm's law, Kirchhoff's voltage and current laws, power dissipation, series and parallel resistors. Build voltage dividers, measure with a multimeter, and calculate LED current limiting resistors.
+    **Build:** Voltage divider network and LED circuits. **Key parts:** Resistors, LEDs, multimeter.
+  </Card>
+
+  <Card title="Lesson 2: Capacitors, Inductors, and RC/RL Circuits" icon="document">
+    [Capacitors, Inductors, and RC/RL Circuits](./capacitors-inductors-rc-circuits). Capacitor charging and discharging, time constants, energy storage. Build an RC filter, measure the time constant, and observe the effect on a square wave.
+    **Build:** RC low-pass filter. **Key parts:** Capacitors, resistors.
+  </Card>
+
+  <Card title="Lesson 3: Diodes, Rectifiers, and Protection Circuits" icon="document">
+    [Diodes, Rectifiers, and Protection Circuits](./diodes-rectifiers-protection). Forward and reverse bias, rectifier circuits, Zener voltage regulation, flyback protection. Build a half-wave rectifier and test a flyback diode on a relay.
+    **Build:** Half-wave rectifier and flyback protection. **Key parts:** Diodes, Zener diodes.
+  </Card>
+
+  <Card title="Lesson 4: Transistors as Switches and Amplifiers" icon="document">
+    [Transistors as Switches and Amplifiers](./transistors-switches-amplifiers). BJT and MOSFET fundamentals, saturation and cutoff regions, driving loads from MCU pins. Drive a motor or relay from a GPIO pin through a transistor.
+    **Build:** Transistor motor driver. **Key parts:** NPN transistor, N-channel MOSFET.
+  </Card>
+
+  <Card title="Lesson 5: Operational Amplifiers" icon="document">
+    [Operational Amplifiers](./operational-amplifiers). Inverting, non-inverting, buffer, comparator, and differential amplifier configurations. Build a signal conditioning circuit that amplifies a thermistor signal for an ADC.
+    **Build:** Sensor signal amplifier. **Key parts:** LM358 op-amp.
+  </Card>
+
+  <Card title="Lesson 6: Power Supply Design" icon="document">
+    [Power Supply Design](./power-supply-design). Linear vs switching regulators, LDO selection, voltage regulation, ripple, and decoupling strategies. Build a 3.3V regulated supply from a 9V battery using an LM1117.
+    **Build:** 3.3V regulated power supply. **Key parts:** LM1117, capacitors.
+  </Card>
+
+  <Card title="Lesson 7: Filters and Frequency Response" icon="document">
+    [Filters and Frequency Response](./filters-frequency-response). Low-pass, high-pass, and band-pass filters. Cutoff frequency calculation and Bode plots. Build an RC low-pass filter and measure its frequency response.
+    **Build:** Audio-range RC filter. **Key parts:** Resistors, capacitors.
+  </Card>
+
+  <Card title="Lesson 8: Oscillators and Timing Circuits" icon="document">
+    [Oscillators and Timing Circuits](./oscillators-timing-circuits). 555 timer in astable and monostable modes, crystal oscillators, RC oscillators. Build a 555 astable oscillator and drive a buzzer at a specific frequency.
+    **Build:** 555 timer buzzer circuit. **Key parts:** 555 timer IC, passive buzzer.
+  </Card>
+
+  <Card title="Lesson 9: Sensors and Signal Conditioning" icon="document">
+    [Sensors and Signal Conditioning](./sensors-signal-conditioning). Thermistors, LDRs, strain gauges, Wheatstone bridge, instrumentation amplifier. Build a complete temperature measurement circuit with thermistor and op-amp conditioning.
+    **Build:** Temperature sensing circuit. **Key parts:** Thermistor, LM358 op-amp.
+  </Card>
+</CardGrid>
+
+<InArticleAd />
+
+## Parts Kit
+
+You can complete every lesson in this course with a small kit of commonly available components. Most of these parts are reused across multiple lessons.
+
+| Component | Quantity | Used In | Approximate Cost |
+|-----------|----------|---------|-----------------|
+| Breadboard (830 tie points) | 1 | All lessons | 2 to 4 USD |
+| Jumper wire kit (M-M and M-F) | 1 set | All lessons | 2 to 3 USD |
+| Resistor assortment (220, 330, 1k, 4.7k, 10k, 47k, 100k ohm) | 1 pack | Lessons 1 to 9 | 1 to 2 USD |
+| Capacitor assortment (100nF, 1uF, 10uF, 100uF, 470uF ceramic and electrolytic) | 1 pack | Lessons 2, 6, 7, 8 | 1 to 2 USD |
+| LEDs (red, green, assorted) | 5+ | Lessons 1, 3 | 1 USD |
+| Digital multimeter | 1 | All lessons | 3 to 8 USD |
+| Potentiometer (10k ohm) | 2 | Lessons 1, 5, 9 | 1 USD |
+| NPN transistor (2N2222 or BC547) | 3 | Lesson 4 | 1 USD |
+| N-channel MOSFET (2N7000 or IRFZ44N) | 2 | Lesson 4 | 1 USD |
+| Op-amp LM358 (dual) | 2 | Lessons 5, 9 | 1 USD |
+| Voltage regulator LM1117-3.3 or 7805 | 2 | Lesson 6 | 1 USD |
+| Diodes 1N4007 (general purpose) | 5 | Lessons 3, 4 | 1 USD |
+| Zener diode 5.1V | 2 | Lesson 3 | 1 USD |
+| 555 timer IC (NE555) | 2 | Lesson 8 | 1 USD |
+| Passive buzzer | 1 | Lesson 8 | 1 USD |
+| NTC thermistor (10k ohm) | 2 | Lessons 5, 9 | 1 USD |
+| LDR (light dependent resistor) | 2 | Lesson 9 | 1 USD |
+| 9V battery + snap connector | 1 | Lesson 6 | 1 to 2 USD |
+
+**Estimated total cost: 15 to 25 USD** depending on where you source components. Online marketplaces and local electronics shops both carry these standard parts.
+
+## Where This Connects
+
+Every lesson in this course maps directly to concepts you will encounter in embedded systems, PCB design, and sensor interfacing courses.
+
+| Analog Topic | Where It Shows Up |
+|-------------|-------------------|
+| Voltage dividers, Ohm's law | GPIO pin current limits, ADC reference voltages, level shifting |
+| Capacitors and time constants | Decoupling capacitors on every MCU, debounce circuits, RC delay timing |
+| Diodes and protection | Flyback diodes on relays and motors, reverse polarity protection, ESD clamping |
+| Transistor switches | Driving motors, relays, and high-power LEDs from low-current GPIO pins |
+| Op-amp signal conditioning | Amplifying weak sensor signals before ADC sampling, impedance buffering |
+| Power supply design | Designing clean 3.3V and 5V rails for MCU boards, understanding LDO dropout |
+| Filters | Anti-aliasing before ADC input, noise filtering on sensor lines, audio processing |
+| Oscillators and timing | Crystal oscillator selection for MCU clocks, understanding jitter and stability |
+| Sensor conditioning | Reading thermistors, strain gauges, and other analog sensors with full accuracy |
+
+## Course Approach
+
+<Steps>
+1. **Concept with Analogy**
+   Every new idea starts with a real-world analogy and a plain English explanation. The math comes after you understand the intuition.
+
+2. **Formulas and Calculations**
+   Key equations are presented with worked examples so you can verify your own calculations.
+
+3. **Build It on a Breadboard**
+   Every lesson includes a practical circuit you can build and test with the parts kit listed above.
+
+4. **Measure and Verify**
+   Use your multimeter (and optionally an oscilloscope) to confirm that theory matches reality.
+
+5. **Connect to Embedded Systems**
+   Each lesson ends by showing exactly where these analog concepts appear in microcontroller projects and PCB design.
+</Steps>
+
+<InArticleAd />
+<TawkWidget />
+<Copyright />

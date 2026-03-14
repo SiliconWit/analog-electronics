@@ -1,0 +1,419 @@
+---
+title: "Filters and Frequency Response"
+description: "Design low-pass, high-pass, and band-pass filters using RC circuits. Calculate cutoff frequencies, understand Bode plots, and build an anti-aliasing filter for ADC inputs. Learn first-order and second-order filter behavior."
+contributors: "sam-macharia"
+pubDate: 2026-03-08
+tags: ["analog-electronics", "filters", "low-pass", "high-pass", "band-pass", "bode-plot", "cutoff-frequency", "anti-aliasing"]
+excerpt: "Filters separate wanted signals from unwanted noise. Learn to design low-pass, high-pass, and band-pass filters, calculate cutoff frequencies, read Bode plots, and build an anti-aliasing filter that prevents sampling artifacts in ADC readings."
+heroImage: "https://cdn.siliconwit.com/education/analog-electronics/filters-frequency-response.png"
+---
+
+import TawkWidget from '../../../../components/TawkWidget.astro';
+import UniversalContentContributors from '../../../../components/UniversalContentContributors.astro';
+import InArticleAd from '../../../../components/InArticleAd.astro';
+import Copyright from '../../../../components/Copyright.astro';
+import BionicText from '../../../../components/BionicText.astro';
+import TailwindWrapper from '../../../../components/TailwindWrapper.jsx';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid, Badge, Steps, LinkButton, FileTree } from '@astrojs/starlight/components';
+
+<UniversalContentContributors 
+  contributors={frontmatter.contributors}
+/>
+
+
+
+import AnalogElectronicsComments from '../../../../components/analog-electronics/AnalogElectronicsComments.astro';
+
+Every real-world signal contains noise. The temperature reading from a thermistor has 50/60 Hz mains hum. The audio signal from a microphone has ultrasonic components that alias when sampled. The power supply rail has high-frequency switching noise. Filters let you keep the signal you want and reject everything else. This lesson teaches you to design, build, and analyze passive RC filters for the frequencies that matter in embedded systems. #AnalogElectronics #Filters #FrequencyResponse
+
+## What Is a Filter?
+
+A filter is a circuit that selectively passes signals at certain frequencies while attenuating (reducing) signals at other frequencies. The four basic filter types are:
+
+<CardGrid>
+  <Card title="Low-Pass Filter" icon="star">
+    Passes low frequencies, attenuates high frequencies. Used for smoothing, noise removal, and anti-aliasing before ADC inputs.
+  </Card>
+
+  <Card title="High-Pass Filter" icon="rocket">
+    Passes high frequencies, attenuates low frequencies. Used for removing DC offset, AC coupling, and blocking slow drift from sensor signals.
+  </Card>
+
+  <Card title="Band-Pass Filter" icon="setting">
+    Passes a range of frequencies, attenuates everything above and below. Used for selecting a specific signal frequency from a noisy environment.
+  </Card>
+
+  <Card title="Band-Stop (Notch) Filter" icon="document">
+    Rejects a specific frequency range and passes everything else. Used for removing 50/60 Hz mains hum from sensitive measurements.
+  </Card>
+</CardGrid>
+
+## The RC Low-Pass Filter
+
+<InArticleAd />
+
+
+The simplest and most commonly used filter in embedded electronics is the RC low-pass filter. You already encountered this in Lesson 2 when studying RC circuits.
+
+### Circuit
+
+A resistor in series, followed by a capacitor to ground:
+
+```
+V_in ──── R ────┬──── V_out
+                │
+                C
+                │
+               GND
+```
+
+### Cutoff Frequency
+
+The cutoff frequency (also called the -3 dB frequency or corner frequency) is:
+
+$$f_c = \frac{1}{2\pi R C}$$
+
+At the cutoff frequency, the output signal is attenuated to $\frac{1}{\sqrt{2}} \approx 0.707$ of the input (a 3 dB reduction in power).
+
+### Transfer Function
+
+The ratio of output to input voltage as a function of frequency:
+
+$$\left| \frac{V_{out}}{V_{in}} \right| = \frac{1}{\sqrt{1 + \left(\frac{f}{f_c}\right)^2}}$$
+
+| Frequency relative to $f_c$ | Output/Input ratio | dB |
+|------------------------------|-------------------|-----|
+| $f = 0.1 f_c$ | 0.995 | -0.04 dB |
+| $f = f_c$ | 0.707 | -3 dB |
+| $f = 2 f_c$ | 0.447 | -7 dB |
+| $f = 10 f_c$ | 0.0995 | -20 dB |
+| $f = 100 f_c$ | 0.01 | -40 dB |
+
+### Roll-Off Rate
+
+A first-order RC filter has a roll-off of -20 dB per decade (a factor of 10 in frequency). This means that for every 10x increase in frequency above $f_c$, the output drops by a factor of 10. This is a gentle slope. For sharper filtering, you need higher-order filters or active filters.
+
+## Bode Plots
+
+<InArticleAd />
+
+
+A Bode plot is a graph that shows a filter's frequency response. It has two parts:
+
+1. **Magnitude plot**: Output amplitude (in dB) vs frequency (log scale)
+2. **Phase plot**: Phase shift (in degrees) vs frequency (log scale)
+
+### Reading a Bode Plot
+
+For a first-order RC low-pass filter:
+
+**Magnitude:**
+- Flat at 0 dB for frequencies well below $f_c$
+- Drops by 3 dB at $f_c$
+- Falls at -20 dB/decade for frequencies above $f_c$
+
+**Phase:**
+- Starts at 0 degrees at very low frequencies
+- Reaches -45 degrees at $f_c$
+- Approaches -90 degrees at very high frequencies
+
+### Decibels Quick Reference
+
+Decibels (dB) express the ratio of two power or amplitude levels on a logarithmic scale:
+
+$$dB = 20 \log_{10}\left(\frac{V_{out}}{V_{in}}\right)$$
+
+| Voltage Ratio | dB |
+|--------------|-----|
+| 1.0 (no change) | 0 dB |
+| 0.707 | -3 dB |
+| 0.5 | -6 dB |
+| 0.316 | -10 dB |
+| 0.1 | -20 dB |
+| 0.01 | -40 dB |
+| 2.0 | +6 dB |
+| 10.0 | +20 dB |
+
+## The RC High-Pass Filter
+
+<InArticleAd />
+
+
+Swap the resistor and capacitor positions to get a high-pass filter:
+
+```
+V_in ──── C ────┬──── V_out
+                │
+                R
+                │
+               GND
+```
+
+### Cutoff Frequency
+
+Same formula as the low-pass:
+
+$$f_c = \frac{1}{2\pi R C}$$
+
+But the behavior is opposite: frequencies below $f_c$ are attenuated, and frequencies above $f_c$ pass through.
+
+### Transfer Function
+
+$$\left| \frac{V_{out}}{V_{in}} \right| = \frac{f/f_c}{\sqrt{1 + \left(\frac{f}{f_c}\right)^2}}$$
+
+### Common Uses
+
+- **AC coupling**: Removing the DC component from a signal so you can amplify only the AC part. This is how oscilloscope "AC coupling" mode works.
+- **Removing sensor drift**: A temperature sensor that drifts slowly can have its drift removed with a high-pass filter while preserving fast transient responses.
+- **Audio**: Blocking DC offset before a speaker to prevent cone displacement.
+
+## Band-Pass Filter
+
+<InArticleAd />
+
+
+A band-pass filter combines a high-pass and a low-pass filter in series. It passes frequencies between a lower cutoff ($f_{cL}$) and an upper cutoff ($f_{cH}$):
+
+```
+V_in ── C_HP ──┬── R_HP ──── R_LP ──┬── V_out
+               │                    │
+              GND                  C_LP
+                                    │
+                                   GND
+```
+
+The bandwidth is the difference between the two cutoff frequencies:
+
+$$BW = f_{cH} - f_{cL}$$
+
+The center frequency is:
+
+$$f_0 = \sqrt{f_{cL} \times f_{cH}}$$
+
+### Design Approach
+
+Design the high-pass section first (to set $f_{cL}$), then the low-pass section (to set $f_{cH}$). The two sections should not load each other significantly. A rule of thumb: make the low-pass resistor at least 10 times larger than the high-pass resistor.
+
+### Worked Example: Audio Band-Pass
+
+To pass audio frequencies from 100 Hz to 10 kHz:
+
+**High-pass section** ($f_{cL} = 100\,Hz$):
+Choose $R_{HP} = 10k\Omega$:
+$$C_{HP} = \frac{1}{2\pi \times 10{,}000 \times 100} = 159\,nF \approx 150\,nF$$
+
+**Low-pass section** ($f_{cH} = 10\,kHz$):
+Choose $R_{LP} = 100k\Omega$ (10x the high-pass R to minimize loading):
+$$C_{LP} = \frac{1}{2\pi \times 100{,}000 \times 10{,}000} = 159\,pF \approx 150\,pF$$
+
+## Anti-Aliasing Filters
+
+<InArticleAd />
+
+
+### The Aliasing Problem
+
+When an ADC samples a signal, it can only correctly represent frequencies below half the sampling rate (the Nyquist frequency):
+
+$$f_{Nyquist} = \frac{f_{sample}}{2}$$
+
+If the input signal contains frequencies above $f_{Nyquist}$, those frequencies "fold" back into the lower frequency range, creating phantom signals (aliases) that are indistinguishable from real signals.
+
+**Example**: An ADC sampling at 1 kHz has $f_{Nyquist} = 500\,Hz$. A 700 Hz noise signal in the input will appear as a 300 Hz alias in the sampled data ($1000 - 700 = 300$). No amount of digital filtering can remove this alias because it looks identical to a real 300 Hz signal.
+
+### The Solution: Anti-Aliasing Filter
+
+Place a low-pass filter before the ADC input with a cutoff frequency at or below the Nyquist frequency. This attenuates frequencies above $f_{Nyquist}$ before they reach the ADC.
+
+For a 1 kHz sampling rate, set $f_c$ to about 500 Hz or slightly below:
+
+Choose $R = 3.3k\Omega$ and $C = 100\,nF$:
+
+$$f_c = \frac{1}{2\pi \times 3300 \times 0.0000001} = 482\,Hz$$
+
+Close enough to 500 Hz. This single-pole filter provides -20 dB/decade roll-off. At the Nyquist frequency (500 Hz), the signal is attenuated by about 3 dB. At 1 kHz, it is attenuated by about 7 dB. For many applications, this is sufficient. For higher performance, use a two-stage RC filter (-40 dB/decade) or an active filter.
+
+## Second-Order Filters
+
+<InArticleAd />
+
+
+A second-order filter uses two RC stages in series, providing -40 dB/decade roll-off (twice as steep as first-order):
+
+```
+V_in ── R1 ──┬── R2 ──┬── V_out
+             │        │
+             C1       C2
+             │        │
+            GND      GND
+```
+
+The cutoff frequency of the cascade is not simply the individual cutoff frequency. Due to loading between stages, the effective cutoff is lower:
+
+$$f_c \approx \frac{1}{2\pi RC} \times 0.64 \quad \text{(for identical RC stages)}$$
+
+For accurate second-order filter design, use a Sallen-Key active filter topology (which uses an op-amp and provides precise control over the response shape). But for quick prototyping, two cascaded RC stages with the second R being 10x the first (to reduce loading) works adequately.
+
+### Butterworth vs Chebyshev
+
+When you design active filters, you can choose the response shape:
+
+| Type | Characteristic | Passband | Transition |
+|------|---------------|----------|------------|
+| Butterworth | Maximally flat passband | No ripple | Moderate steepness |
+| Chebyshev | Ripple in passband | Some ripple | Steeper transition |
+| Bessel | Maximally flat group delay | No ripple | Gentle transition |
+
+For most embedded ADC applications, Butterworth is the standard choice because the flat passband means no signal distortion in the frequency range of interest.
+
+## Component Selection for Filters
+
+<InArticleAd />
+
+
+### Resistor Tolerance
+
+For filters, use 1% metal film resistors when possible. The cutoff frequency depends directly on the resistor value, so a 5% tolerance resistor creates a 5% uncertainty in $f_c$. For audio or measurement applications, this matters.
+
+### Capacitor Selection
+
+- **C0G/NP0 ceramic**: Best stability, lowest distortion. Ideal for filter circuits. Available up to about 10 nF.
+- **X7R ceramic**: Good stability, available in larger values. Acceptable for most filters.
+- **X5R/Y5V ceramic**: Capacitance varies significantly with voltage and temperature. Avoid for filter circuits.
+- **Film capacitors**: Excellent for audio filters. Stable and low-distortion.
+
+### Source Impedance Consideration
+
+The filter's input source must have a low impedance compared to the filter resistor. If the source impedance is comparable to R, it shifts the cutoff frequency. Solution: buffer the source with an op-amp voltage follower (Lesson 5) before the filter.
+
+## Practical Build: RC Low-Pass Filter
+
+<InArticleAd />
+
+
+### Components Needed
+
+| Component | Quantity | Notes |
+|-----------|----------|-------|
+| Breadboard | 1 | From previous lessons |
+| Resistors: 1k, 3.3k, 10k, 33k, 100k ohm | 1 each | 1% preferred |
+| Capacitors: 100 pF, 1 nF, 10 nF, 100 nF, 1 $\mu F$ | 1 each | Ceramic C0G or X7R |
+| Function generator (or MCU generating a square wave) | 1 | For frequency sweep |
+| Oscilloscope (or MCU with ADC for slow signals) | 1 | For measuring output |
+| Digital multimeter | 1 | AC voltage mode |
+| Passive buzzer | 1 | For audio demonstration |
+| LED + 220 ohm resistor | 1 | For low-frequency visual indicator |
+| Jumper wires | Several | Male-to-male |
+
+### Circuit: Audio Low-Pass Filter
+
+<Steps>
+1. **Choose component values**
+   For a 1 kHz cutoff: $R = 10k\Omega$, $C = 15\,nF$.
+   $$f_c = \frac{1}{2\pi \times 10{,}000 \times 0.000000015} = 1061\,Hz$$
+   If you do not have 15 nF, use 10 nF ($f_c = 1592\,Hz$) or two 10 nF in series plus a 10 nF in parallel for approximately 15 nF. Alternatively, use $R = 3.3k\Omega$ and $C = 47\,nF$ for $f_c = 1027\,Hz$.
+
+2. **Build the filter**
+   Connect the resistor from the input to the output node. Connect the capacitor from the output node to ground.
+
+3. **Connect a signal source**
+   If you have a function generator, set it to produce a sine wave at 100 Hz, 1V amplitude. If you are using an MCU, generate a PWM signal and vary the frequency.
+
+4. **Measure the output at several frequencies**
+   Sweep the input frequency and measure the output amplitude at each point:
+   - 10 Hz, 50 Hz, 100 Hz, 200 Hz, 500 Hz, 1 kHz, 2 kHz, 5 kHz, 10 kHz, 20 kHz
+
+5. **Record the results**
+   Calculate $V_{out}/V_{in}$ at each frequency. Below $f_c$, the ratio should be close to 1. At $f_c$, it should be about 0.707. Above $f_c$, it drops progressively.
+
+6. **Plot the response**
+   Plot your measurements on a graph with frequency (log scale) on the horizontal axis and $V_{out}/V_{in}$ (or dB) on the vertical axis. You have just made your own Bode plot.
+</Steps>
+
+### Alternative: No Function Generator
+
+If you do not have a function generator or oscilloscope, you can still demonstrate filtering:
+
+<Steps>
+1. **Use an MCU to generate PWM**
+   Program an Arduino or STM32 to generate a square wave at a specific frequency on a GPIO pin.
+
+2. **Build the RC filter**
+   Connect the filter between the GPIO pin and an ADC input on the same or different MCU.
+
+3. **Read the ADC at different PWM frequencies**
+   At low frequencies, the ADC will read a signal that toggles between high and low. At high frequencies (well above $f_c$), the ADC reads a nearly constant voltage (the average of the square wave, about $V_{CC}/2$).
+
+4. **Listen to the difference**
+   Connect a passive buzzer after the filter. Generate a square wave at 2 kHz (a clear tone). Now put it through the 1 kHz low-pass filter. The buzzer tone becomes muffled because the harmonics that give the square wave its sharp edges are attenuated.
+</Steps>
+
+### Measurement Table
+
+| Frequency (Hz) | Predicted $V_{out}/V_{in}$ | Measured $V_{out}/V_{in}$ | Predicted dB | Measured dB |
+|----------------|---------------------------|--------------------------|-------------|------------|
+| 10 | 1.000 | ________ | 0.0 | ________ |
+| 100 | 0.995 | ________ | -0.04 | ________ |
+| 500 | 0.905 | ________ | -0.87 | ________ |
+| 1000 ($f_c$) | 0.707 | ________ | -3.0 | ________ |
+| 2000 | 0.447 | ________ | -7.0 | ________ |
+| 5000 | 0.196 | ________ | -14.2 | ________ |
+| 10000 | 0.0995 | ________ | -20.0 | ________ |
+
+## Common Mistakes
+
+<InArticleAd />
+
+
+<Card title="Watch Out For These" icon="warning">
+- **Forgetting the anti-aliasing filter**: Sampling without filtering can produce aliased signals that look real but are artifacts. Always filter before the ADC.
+- **Using the wrong capacitor type**: X5R and Y5V ceramic capacitors change value with applied voltage and temperature. Use C0G/NP0 or film capacitors for filter circuits.
+- **Ignoring source impedance**: A high-impedance source shifts the filter's cutoff frequency. Buffer the source if needed.
+- **Single-pole filter for demanding applications**: A first-order RC filter only gives -20 dB/decade. For strong noise rejection, you need second-order (-40 dB/decade) or higher-order active filters.
+- **Filter output driving a low-impedance load**: If the load impedance is comparable to the filter's output impedance, the load changes the filter response. Buffer the filter output with an op-amp if needed.
+</Card>
+
+## How This Connects to Embedded Systems
+
+<InArticleAd />
+
+
+<Card title="Filters Are Everywhere in MCU Design" icon="rocket">
+- **Anti-aliasing before ADC**: The STM32 ADC can sample at up to 2.4 Msps. Without an anti-aliasing filter, any noise above the Nyquist frequency folds into the measurement. A simple RC filter on the ADC input pin solves this.
+- **Debouncing**: A low-pass RC filter on a button input removes high-frequency contact bounce. Combined with Schmitt trigger input (which most MCU GPIO pins have), this gives clean digital transitions.
+- **Audio processing**: If your MCU processes audio (voice recognition, tone detection), you need band-pass filtering to isolate the frequency range of interest.
+- **PWM to analog conversion**: A low-pass filter converts a PWM signal into a smooth analog voltage. This is a poor man's DAC. The cutoff frequency must be well below the PWM frequency for clean output.
+- **EMC compliance**: On production PCBs, filters on power inputs and signal lines help meet electromagnetic compatibility requirements by reducing conducted and radiated emissions.
+- **Sensor noise reduction**: Averaging ADC samples in software is a digital low-pass filter. Combining a hardware RC filter with software averaging provides excellent noise rejection.
+</Card>
+
+## Summary
+
+<InArticleAd />
+
+
+| Filter Type | Circuit | Cutoff Formula | Passes |
+|------------|---------|----------------|--------|
+| Low-pass (RC) | R series, C to ground | $f_c = \frac{1}{2\pi RC}$ | Frequencies below $f_c$ |
+| High-pass (RC) | C series, R to ground | $f_c = \frac{1}{2\pi RC}$ | Frequencies above $f_c$ |
+| Band-pass | HP + LP in cascade | $f_{cL}$ to $f_{cH}$ | Frequencies between cutoffs |
+| First-order roll-off | Single RC stage | N/A | -20 dB/decade |
+| Second-order roll-off | Two RC stages | N/A | -40 dB/decade |
+
+| Design Parameter | Key Consideration |
+|-----------------|-------------------|
+| Anti-aliasing $f_c$ | At or below $f_{sample}/2$ |
+| Component tolerance | Use 1% resistors, C0G capacitors for precision |
+| Source impedance | Must be low relative to filter R |
+| Load impedance | Must be high relative to filter output impedance |
+
+Next lesson: oscillators and timing circuits. The 555 timer generates precise frequencies using the RC time constants you have been studying, and crystal oscillators provide the stable clock that drives your MCU.
+
+<AnalogElectronicsComments />
+
+
+
+<InArticleAd />
+<TawkWidget />
+<Copyright />

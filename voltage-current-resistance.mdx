@@ -1,0 +1,348 @@
+---
+title: "Voltage, Current, and Resistance"
+description: "Learn the three fundamental quantities of electronics: voltage, current, and resistance. Master Ohm's law, Kirchhoff's laws, power dissipation, and series/parallel resistor networks. Build voltage dividers and LED circuits on a breadboard."
+contributors: "sam-macharia"
+pubDate: 2026-03-02
+tags: ["analog-electronics", "ohms-law", "voltage-divider", "kirchhoff", "resistors", "led-circuit"]
+excerpt: "Master the three pillars of electronics with hands-on breadboard circuits. Calculate current through any resistor, design voltage dividers for sensor interfaces, and understand why every LED needs a current-limiting resistor."
+heroImage: "https://cdn.siliconwit.com/education/analog-electronics/voltage-current-resistance.png"
+---
+
+import TawkWidget from '../../../../components/TawkWidget.astro';
+import UniversalContentContributors from '../../../../components/UniversalContentContributors.astro';
+import InArticleAd from '../../../../components/InArticleAd.astro';
+import Copyright from '../../../../components/Copyright.astro';
+import BionicText from '../../../../components/BionicText.astro';
+import TailwindWrapper from '../../../../components/TailwindWrapper.jsx';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid, Badge, Steps, LinkButton, FileTree } from '@astrojs/starlight/components';
+
+<UniversalContentContributors 
+  contributors={frontmatter.contributors}
+/>
+
+
+
+import AnalogElectronicsComments from '../../../../components/analog-electronics/AnalogElectronicsComments.astro';
+
+Every electronic circuit, from a simple LED blinker to a complex microcontroller system, operates on three fundamental quantities: voltage, current, and resistance. Understanding how these three relate to each other is the single most important concept in all of electronics. Once you internalize Ohm's law and Kirchhoff's laws, you can analyze any circuit you encounter. #AnalogElectronics #OhmsLaw #CircuitFundamentals
+
+## The Water Analogy
+
+Before diving into equations, let's build an intuition using water flow.
+
+<CardGrid>
+  <Card title="Voltage Is Water Pressure" icon="star">
+    Voltage (measured in volts, V) is the electrical pressure that pushes charges through a circuit. Think of it as the height of a water tank. A higher tank creates more pressure at the bottom. Similarly, a higher voltage creates more force to push current through components.
+  </Card>
+
+  <Card title="Current Is Water Flow Rate" icon="rocket">
+    Current (measured in amperes, A) is the rate at which electric charge flows through a conductor. It corresponds to the volume of water flowing through a pipe per second. More pressure (voltage) through the same pipe (resistance) means more flow (current).
+  </Card>
+
+  <Card title="Resistance Is Pipe Narrowness" icon="setting">
+    Resistance (measured in ohms, $\Omega$) opposes the flow of current. A narrow pipe restricts water flow. A high-value resistor restricts current flow. Every material has some resistance, and we use resistors to control current deliberately.
+  </Card>
+</CardGrid>
+
+This analogy breaks down at advanced levels, but for building circuits on a breadboard, it works remarkably well.
+
+## Ohm's Law
+
+<InArticleAd />
+
+
+The relationship between voltage, current, and resistance is expressed by Ohm's law:
+
+$$V = I \times R$$
+
+Where:
+- $V$ = voltage across the component (volts)
+- $I$ = current through the component (amperes)
+- $R$ = resistance of the component (ohms)
+
+You can rearrange this equation three ways depending on what you need to find:
+
+$$I = \frac{V}{R} \qquad R = \frac{V}{I} \qquad V = I \times R$$
+
+### Worked Example: LED Current
+
+Suppose you have a 5V supply and want to drive a red LED. A typical red LED has a forward voltage drop of about 2V and a safe operating current of 20 mA (0.02 A). What resistor do you need?
+
+The resistor must drop the remaining voltage:
+
+$$V_R = V_{supply} - V_{LED} = 5V - 2V = 3V$$
+
+Using Ohm's law to find the resistance:
+
+$$R = \frac{V_R}{I} = \frac{3V}{0.02A} = 150\,\Omega$$
+
+A standard 150 ohm or 220 ohm resistor will work. Using 220 ohm reduces the current slightly to about 13.6 mA, which is still bright and extends the LED lifetime.
+
+## Kirchhoff's Voltage Law (KVL)
+
+<InArticleAd />
+
+
+Kirchhoff's Voltage Law states that the sum of all voltage drops around any closed loop in a circuit equals zero. In practical terms, this means the supply voltage is distributed among all the components in a series circuit.
+
+$$\sum V = 0$$
+
+For a simple series circuit with a battery, resistor, and LED:
+
+$$V_{battery} - V_{resistor} - V_{LED} = 0$$
+
+This is exactly what we used in the LED example above. The battery provides 5V, the LED drops 2V, and the resistor must drop the remaining 3V. The voltages balance.
+
+### Why KVL Matters
+
+KVL lets you find unknown voltages in any loop. If you measure two out of three voltages in a series circuit, KVL tells you the third. When debugging a circuit with a multimeter, KVL is your primary tool: if the voltages around a loop don't add up, something is wrong (a bad connection, a burned component, or a measurement error).
+
+## Kirchhoff's Current Law (KCL)
+
+<InArticleAd />
+
+
+Kirchhoff's Current Law states that the total current entering a node (junction) equals the total current leaving it. No charge is created or destroyed at a junction.
+
+$$\sum I_{in} = \sum I_{out}$$
+
+If a wire splits into two branches carrying 10 mA and 15 mA, then 25 mA must be flowing in the wire before the split. This principle is essential when analyzing parallel circuits.
+
+## Series and Parallel Resistors
+
+<InArticleAd />
+
+
+### Series Resistors
+
+Resistors in series carry the same current, and their resistances add:
+
+$$R_{total} = R_1 + R_2 + R_3 + \cdots$$
+
+The voltage divides across them proportionally to their resistance values. A larger resistor drops a larger share of the voltage.
+
+### Parallel Resistors
+
+Resistors in parallel have the same voltage across them, and the total resistance is calculated by:
+
+$$\frac{1}{R_{total}} = \frac{1}{R_1} + \frac{1}{R_2} + \frac{1}{R_3} + \cdots$$
+
+For two resistors in parallel, there is a convenient shortcut:
+
+$$R_{total} = \frac{R_1 \times R_2}{R_1 + R_2}$$
+
+Key insight: the parallel combination is always less than the smallest individual resistor. Adding resistors in parallel provides more paths for current, reducing overall resistance.
+
+### Quick Reference
+
+| Configuration | Same quantity | Adds up |
+|--------------|--------------|---------|
+| Series | Current | Resistance, Voltage drops |
+| Parallel | Voltage | Current (through each branch) |
+
+## Power Dissipation
+
+<InArticleAd />
+
+
+Every resistor converts electrical energy into heat. The power dissipated is:
+
+$$P = V \times I = I^2 \times R = \frac{V^2}{R}$$
+
+Power is measured in watts (W). Standard through-hole resistors are rated for 0.25 W (1/4 watt). If your calculation shows a resistor needs to dissipate more than its rating, it will overheat and potentially burn.
+
+### Worked Example: Power Check
+
+Using our 150 ohm LED resistor with 20 mA flowing through it:
+
+$$P = I^2 \times R = (0.02)^2 \times 150 = 0.06\,W = 60\,mW$$
+
+This is well within the 250 mW rating of a standard 1/4 watt resistor. No problem.
+
+But if you used a 10 ohm resistor to drop 5V directly:
+
+$$P = \frac{V^2}{R} = \frac{25}{10} = 2.5\,W$$
+
+A 1/4 watt resistor would smoke immediately. Always check power dissipation.
+
+## The Voltage Divider
+
+<InArticleAd />
+
+
+A voltage divider is two resistors in series that produce an output voltage that is a fraction of the input voltage. This is one of the most common circuits in all of electronics.
+
+$$V_{out} = V_{in} \times \frac{R_2}{R_1 + R_2}$$
+
+Where $R_1$ is connected between $V_{in}$ and $V_{out}$, and $R_2$ is connected between $V_{out}$ and ground.
+
+### Worked Example: 3.3V from 5V
+
+To get 3.3V from a 5V source:
+
+$$\frac{V_{out}}{V_{in}} = \frac{3.3}{5} = 0.66$$
+
+$$\frac{R_2}{R_1 + R_2} = 0.66$$
+
+Using $R_1 = 1k\Omega$ and $R_2 = 2k\Omega$:
+
+$$V_{out} = 5V \times \frac{2000}{1000 + 2000} = 5V \times 0.667 = 3.33V$$
+
+Close enough. In practice, you might use $R_1 = 10k\Omega$ and $R_2 = 20k\Omega$ for a higher impedance divider that draws less current from the source.
+
+### Voltage Divider Limitations
+
+A voltage divider is not a power supply. When you connect a load to the output, the load acts as a resistor in parallel with $R_2$, changing the output voltage. Voltage dividers work well for:
+
+- Reducing a signal level (e.g., 5V logic to 3.3V logic input)
+- Reading a potentiometer position
+- Creating a reference voltage for a high-impedance input (like an ADC or op-amp)
+
+They do not work well for powering circuits that draw significant current. Use a voltage regulator for that (see Lesson 6).
+
+## Practical Build: Voltage Divider and LED Circuit
+
+<InArticleAd />
+
+
+### Components Needed
+
+| Component | Quantity | Notes |
+|-----------|----------|-------|
+| Breadboard | 1 | 830 tie-point recommended |
+| 5V power source | 1 | USB power, bench supply, or 4xAA batteries |
+| Resistors: 220, 1k, 2k, 10k ohm | 2 each | 1/4 watt |
+| LEDs (red) | 2 | Standard 5mm through-hole |
+| Digital multimeter | 1 | Measures voltage and current |
+| Jumper wires | Several | Male-to-male for breadboard |
+| Potentiometer (10k ohm) | 1 | Optional, for variable voltage divider |
+
+### Circuit 1: LED with Current Limiting Resistor
+
+<Steps>
+1. **Connect the power rails**
+   Connect your 5V source to the positive rail and ground to the negative rail on the breadboard.
+
+2. **Place the resistor**
+   Insert a 220 ohm resistor between the positive rail and a breadboard row.
+
+3. **Place the LED**
+   Insert the LED with the anode (longer leg) in the same row as the resistor, and the cathode (shorter leg, flat side) connected to the ground rail.
+
+4. **Power on and observe**
+   The LED should light up. If it does not, check that the LED is not reversed.
+
+5. **Measure the voltage across the resistor**
+   Set your multimeter to DC voltage mode. Place the red probe on the resistor lead closest to the positive rail, and the black probe on the other lead. You should read approximately 3V (since the LED drops about 2V from the 5V supply).
+
+6. **Measure the voltage across the LED**
+   Move the probes across the LED. You should read approximately 2V.
+
+7. **Verify KVL**
+   Add both measurements. They should total approximately 5V (the supply voltage). This is Kirchhoff's Voltage Law in action.
+
+8. **Measure current**
+   Break the circuit (remove one jumper) and insert the multimeter in series, set to mA mode. You should read approximately 13 to 14 mA with a 220 ohm resistor.
+</Steps>
+
+### Circuit 2: Voltage Divider
+
+<Steps>
+1. **Build the divider**
+   Connect a 1k ohm resistor from the positive rail to a middle row. Connect a 2k ohm resistor from that middle row to ground.
+
+2. **Measure the output**
+   Place your multimeter probes across the 2k resistor (the middle row to ground). You should read approximately 3.33V.
+
+3. **Try different ratios**
+   Swap in different resistor values and predict the output voltage before measuring. Try 10k + 10k (should give 2.5V), or 1k + 10k (should give about 4.55V).
+
+4. **Use a potentiometer**
+   Replace both resistors with a 10k potentiometer. The wiper (center pin) gives you a continuously variable voltage from 0V to 5V as you turn the knob. This is exactly how analog volume controls work.
+</Steps>
+
+### Verification Checklist
+
+| Measurement | Expected Value | Your Measurement |
+|-------------|---------------|-----------------|
+| Voltage across 220 ohm resistor (LED circuit) | ~3V | ________ |
+| Voltage across LED | ~2V | ________ |
+| KVL check: sum of drops | ~5V | ________ |
+| Current through LED | ~13-14 mA | ________ |
+| Voltage divider output (1k + 2k) | ~3.33V | ________ |
+| Voltage divider output (10k + 10k) | ~2.5V | ________ |
+
+## Common Mistakes
+
+<InArticleAd />
+
+
+<Card title="Watch Out For These" icon="warning">
+- **Forgetting the current limiting resistor on an LED**: Without it, the LED draws too much current and burns out instantly. Always calculate the resistor value first.
+- **Mixing up series and parallel formulas**: Series adds resistance directly. Parallel uses the reciprocal formula. Double-check which configuration you have.
+- **Ignoring power ratings**: A tiny resistor dropping a large voltage at high current will overheat. Always calculate power dissipation.
+- **Using a voltage divider as a power supply**: If the load draws significant current, the output voltage drops. Use a voltage regulator instead.
+</Card>
+
+## Resistor Color Code Quick Reference
+
+<InArticleAd />
+
+
+Most through-hole resistors use colored bands to indicate their value. For a 4-band resistor:
+
+| Band | Meaning |
+|------|---------|
+| 1st band | First digit |
+| 2nd band | Second digit |
+| 3rd band | Multiplier (number of zeros) |
+| 4th band | Tolerance (gold = 5%, silver = 10%) |
+
+Common colors: Black=0, Brown=1, Red=2, Orange=3, Yellow=4, Green=5, Blue=6, Violet=7, Grey=8, White=9.
+
+Example: Red, Red, Brown, Gold = 22 x 10 = 220 ohm, 5% tolerance.
+
+When in doubt, use your multimeter to measure the actual resistance. It takes five seconds and eliminates guesswork.
+
+## How This Connects to Embedded Systems
+
+<InArticleAd />
+
+
+<Card title="You Will Use This Everywhere" icon="rocket">
+Every embedded systems project uses the concepts from this lesson:
+
+- **GPIO current limits**: An STM32 GPIO pin can source about 25 mA. An ATmega328P can source about 20 mA. Ohm's law tells you what resistor to use with an LED so you stay within these limits.
+- **ADC voltage references**: When you read a potentiometer with an ADC, you are reading a voltage divider. Understanding the divider equation lets you convert ADC counts to meaningful values.
+- **Level shifting**: A 5V sensor output going into a 3.3V MCU input needs a voltage divider (or a level shifter, which is built from transistors and resistors).
+- **Pull-up and pull-down resistors**: I2C buses use pull-up resistors. GPIO buttons use pull-up or pull-down resistors. The resistor value determines the current and the switching speed.
+- **PCB power dissipation**: When selecting resistors for a PCB, you need to match the component size (0402, 0603, 0805) to the expected power dissipation.
+</Card>
+
+When you see a 10k pull-up resistor on an I2C bus in a later course, you will understand why 10k was chosen (low enough for reliable communication, high enough to limit wasted current) because you understand Ohm's law.
+
+## Summary
+
+<InArticleAd />
+
+
+| Concept | Key Equation | Remember |
+|---------|-------------|----------|
+| Ohm's Law | $V = IR$ | Voltage, current, and resistance are always linked |
+| KVL | $\sum V = 0$ | Voltages around a loop sum to zero |
+| KCL | $\sum I_{in} = \sum I_{out}$ | Current into a node equals current out |
+| Series R | $R_T = R_1 + R_2 + \cdots$ | Same current, voltages add |
+| Parallel R | $\frac{1}{R_T} = \frac{1}{R_1} + \frac{1}{R_2} + \cdots$ | Same voltage, currents add |
+| Power | $P = IV = I^2R = V^2/R$ | Always check the watt rating |
+| Voltage Divider | $V_{out} = V_{in} \frac{R_2}{R_1+R_2}$ | Not a power supply |
+
+In the next lesson, we will add capacitors and inductors to the mix, introducing the concept of time-varying behavior that is essential for understanding decoupling, filtering, and timing circuits.
+
+<AnalogElectronicsComments />
+
+
+
+<InArticleAd />
+<TawkWidget />
+<Copyright />
