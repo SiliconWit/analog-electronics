@@ -141,10 +141,19 @@ $$V_{out} = \begin{cases} V_{CC} & \text{if } V^+ > V^- \\ 0V & \text{if } V^+ <
 
 The output snaps to the supply rail or ground, producing a digital output from analog inputs. This is useful for threshold detection: "is the temperature above 50 degrees?" or "is the light level below a threshold?"
 
-```
-Reference voltage (via divider) ──>─┤ -        │
-                                      │     OUT ├── Digital output (HIGH or LOW)
-Sensor voltage ─────────────────>─┤ +        │
+```text
+  Vcc
+   |
+  [R1] 10K            ┌--------┐
+   +------->  V-  (-)  |        |
+   |                   |  OUT   +---> Vout
+  [R2] 10K            |        |  (HIGH or LOW)
+   |         V+  (+)  |        |
+  GND   Vsensor -->   └--------┘
+
+  Vref = Vcc x R2/(R1+R2)
+  Vsensor > Vref: Vout = Vcc
+  Vsensor < Vref: Vout = 0V
 ```
 
 **Note**: Dedicated comparator ICs (like LM393) are better for this purpose because they have faster response times and open-collector outputs that interface directly with digital logic. But an op-amp works for slow signals and prototyping.
@@ -154,6 +163,22 @@ Sensor voltage ─────────────────>─┤ +     
 A differential amplifier amplifies the difference between two input signals while rejecting signals that are common to both inputs (common-mode rejection):
 
 $$V_{out} = \frac{R_f}{R_1}(V_2 - V_1)$$
+
+```text
+            [R1]         [Rf]
+V1 o---+--/\/\/--+--+--/\/\/--+
+                 |  |          |
+                 | V-  ┌------┐|
+                 +---->|  OUT |+-> Vout
+                    V+ |      |
+V2 o---+--/\/\/--+--->|      |
+       |  [R1]   |    └------┘
+       |        [Rf]
+       |         |
+       |        GND
+       |
+  Vout = (Rf/R1) x (V2 - V1)
+```
 
 This is essential for reading sensors in noisy environments. If electrical noise affects both signal wires equally, the differential amplifier cancels it out. Wheatstone bridges (Lesson 9) produce a differential signal that requires this type of amplifier.
 
@@ -218,6 +243,21 @@ The solution: amplify and offset the signal so that the temperature range of int
 ### Circuit Design
 
 We will use a two-stage approach:
+
+```text
+  Thermistor       Buffer        Amplifier
+  Divider         (Op-amp A)    (Op-amp B)
+                 ┌--------┐    ┌--------┐
+  VCC--[Rf]--+-->| +  OUT |+-->| +  OUT |--> Vout
+             |   |        |    |        |    (to ADC)
+          [NTC]  | -      |    | -      |
+             |   └---+----┘    └---+----┘
+            GND      |    Rf pot   |
+              (output to   |       |
+               inv. input) +--[R1]-+
+                           |
+                          GND
+```
 
 **Stage 1: Voltage follower (buffer)**
 The thermistor divider output connects to the non-inverting input of the first LM358 section, with the output connected back to the inverting input. This isolates the thermistor from the amplifier loading.

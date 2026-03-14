@@ -83,6 +83,24 @@ Nearly 60% of the input power is wasted as heat. This is acceptable for low-curr
 
 An LDO (Low Dropout) regulator is a linear regulator with a very small minimum voltage difference between input and output. Where the 7805 needs 2V of headroom, an LDO might need only 0.2 to 0.5V.
 
+```text
+                LM1117-3.3
+  Vin           ┌--------┐
+  (5-9V)        |        |
+  o---+---------|IN  OUT |---+---o Vout
+      |         |   GND  |   |     (3.3V)
+  C1 ===10uF    └---+----┘  === C2 10uF
+      |  |          |        |  |
+  C3 ===100nF       |       === C4 100nF
+      |             |        |
+      +-------------+--------+
+      |
+     GND
+
+  C1,C3: input filtering
+  C2,C4: output stability (required!)
+```
+
 ### The LM1117-3.3
 
 The LM1117-3.3 is a popular LDO that produces a fixed 3.3V output:
@@ -190,6 +208,20 @@ Where $D$ is the duty cycle (0 to 1).
 
 Many designs use both: a switching regulator steps 12V down to 5V efficiently, then an LDO produces a clean 3.3V from the 5V rail for the microcontroller and analog circuits. This combines the efficiency of switching with the low noise of linear regulation.
 
+```text
+              Buck              LDO
+  12V       Converter         LM1117
+  o---+--> [DCDC 5V] --+--> [3.3V] --> MCU
+      |    (efficient)  |   (low noise)
+      |                 |
+      |                 +--> 5V peripherals
+      |
+     GND
+
+  Stage 1: 12V to 5V (switching, 90%)
+  Stage 2: 5V to 3.3V (linear, clean)
+```
+
 ## Decoupling and Bypassing
 
 <InArticleAd />
@@ -206,6 +238,22 @@ $$V_{dip} = L_{trace} \times \frac{dI}{dt}$$
 A decoupling capacitor placed right at the IC's power pin provides that burst current locally, bypassing the inductance of the power trace.
 
 ### Decoupling Strategy
+
+```text
+                     MCU IC
+  Vreg    100uF     ┌-----------┐
+  out  +---||---+   |           |
+       |        |   |  VCC1  VCC2
+  +----+----+   +---|---+    |
+  |         |       | 100nF 100nF
+  | 10uF   |       |   |    |
+  +--||--+  +-------|---+-GND+
+  |      |          |       |
+  +------+----------+-------+
+  |
+ GND     Bulk       Per-pin
+         cap        decoupling
+```
 
 For most MCU and digital circuits, use this three-tier approach:
 

@@ -68,6 +68,25 @@ Think of an NPN transistor as a water valve:
 - The **emitter** is where water exits (to ground).
 - A small force on the handle controls a large flow of water through the valve.
 
+```text
+       +5V
+        |
+      Motor
+      (load)
+        |
+        +---> Collector (2N2222)
+        |
+GPIO ---[Rb] 470R --- Base
+        |
+       GND <--- Emitter
+
+  GPIO HIGH: base current flows,
+    transistor saturates, motor runs
+  GPIO LOW: no base current,
+    transistor off, motor stops
+  (Add flyback diode across motor!)
+```
+
 ### Base Resistor Calculation
 
 The base resistor limits current into the base to prevent damage. For an NPN transistor switching a load:
@@ -123,6 +142,24 @@ A MOSFET is controlled by voltage, not current. The key parameter is the gate th
 | $I_D$ (max) | Maximum continuous drain current |
 
 For a MOSFET to be fully ON, you need $V_{GS}$ significantly above $V_{GS(th)}$. This is where "logic-level MOSFETs" become important.
+
+```text
+       +12V
+        |
+     [Motor]
+        |
+        +---> Drain  (IRLZ44N)
+        |
+GPIO --[Rg] 220R --- Gate
+        |             |
+        |          [R] 10K pull-down
+        |             |
+       GND <-------- Source
+
+  Gate is voltage-controlled
+  10K pull-down keeps MOSFET off
+  when GPIO is floating (MCU boot)
+```
 
 ### Logic-Level vs Standard MOSFETs
 
@@ -193,6 +230,25 @@ The 10k pull-down resistor on the gate ensures the MOSFET stays OFF when the GPI
 While switching is the most common use in embedded systems, understanding BJT amplification helps you design sensor signal conditioning circuits.
 
 ### Common-Emitter Amplifier
+
+```text
+        +Vcc
+         |
+       [Rc] 4.7K (collector R)
+         |
+  Vout --+ Collector
+         |
+Vin --[C]--[Rb]-- Base (2N2222)
+                   |
+                 Emitter
+                   |
+                 [Re] 1K (emitter R)
+                   |
+                  GND
+
+  Voltage gain: Av = -Rc / Re
+  Negative sign = output inverted
+```
 
 In the active region, a BJT amplifies the base signal:
 

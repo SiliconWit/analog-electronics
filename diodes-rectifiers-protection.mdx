@@ -83,12 +83,18 @@ Rectifiers convert alternating current (AC) to direct current (DC). This is the 
 
 The simplest rectifier uses a single diode. During the positive half-cycle of the AC input, the diode conducts and the output follows the input (minus the 0.7V diode drop). During the negative half-cycle, the diode blocks and the output is zero.
 
-```
-AC Input ──┬── Diode (1N4007) ──┬── Output (pulsating DC)
-           │        ──►         │
-           │                    ├── Capacitor (filter)
-           │                    │
-           └────────────────────┴── GND
+```text
+           [D1] 1N4007
+AC in o----->|-------+---o  +Vout
+                     |
+              [C1]  ===  470uF
+              (filter)   |
+                     |
+AC in o--------------+---o  GND
+
+  D1 conducts on positive half-cycle
+  C1 smooths pulsating DC output
+  Vout = Vpeak - 0.7V (diode drop)
 ```
 
 The output is pulsating DC. Adding a filter capacitor smooths the pulses into a more stable DC voltage with some residual ripple.
@@ -168,15 +174,25 @@ If $dI/dt$ is very large (current dropping to zero in microseconds), the voltage
 
 A diode placed in reverse (cathode to positive supply, anode to ground side of the inductor) across the inductive load provides a safe path for the current when switching stops. The inductor's energy dissipates through the diode instead of creating a destructive voltage spike.
 
-```
-+V ──┬─────────────┬── Switch (transistor)
-     │             │
-     │    Diode    │
-     │   ◄────     │
-     │             │
-     ├── Relay ────┤
-     │   Coil      │
-     └─────────────┴── GND
+```text
+    +5V
+     |
+     +-------+
+     |       |
+   Relay   [D1] 1N4007 (flyback)
+   Coil    cathode at top
+     |       |
+     +-------+
+     |
+     +---> Collector (2N2222)
+     |
+GPIO --[Rb]-- Base
+     |
+    GND (Emitter)
+
+  D1 is reverse biased during normal
+  operation. When transistor turns off,
+  D1 clamps the inductive spike.
 ```
 
 **This is not optional.** Every inductive load driven by a transistor or MOSFET switch must have a flyback diode. The 1N4007 is a common choice for relays and small motors. For faster switching applications, a Schottky diode (1N5819) is preferred because its lower forward voltage and faster recovery time clamp the spike more effectively.
@@ -190,9 +206,17 @@ A diode placed in reverse (cathode to positive supply, anode to ground side of t
 
 A diode in series with the power input prevents damage if the power supply is connected backwards:
 
-```
-Battery ──── Diode ──── Circuit
-  (+)         ──►         (+)
+```text
+              [D1]
+Battery + o--->|---+--- Vcc (to circuit)
+                   |
+             [C1] === 100uF
+                   |
+Battery - o--------+--- GND (to circuit)
+
+  Correct polarity: D1 conducts
+  Reversed polarity: D1 blocks
+  Use Schottky for lower 0.3V drop
 ```
 
 The diode drops 0.7V from the supply, which is acceptable in many applications. For lower loss, use a Schottky diode (0.3V drop) or a P-channel MOSFET as a reverse polarity switch (millivolt drop).

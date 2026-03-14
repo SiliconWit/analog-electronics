@@ -86,12 +86,37 @@ Different dielectric materials give capacitors different properties. Here are th
 
 **Rule of thumb for MCU circuits**: Place a 100 nF ceramic capacitor as close as possible to every VCC/GND pin pair on your microcontroller. Add a 10 $\mu F$ electrolytic near the power input. This handles both high-frequency and low-frequency power supply noise.
 
+```text
+  Power     10uF       MCU
+  Input  +--||--+    +------+
+  VCC ---+------+----| VCC  |
+         |      |  +-| VCC  |
+         |      | 100nF     |
+         |      |  | |      |
+  GND ---+------+--+-| GND  |
+                     +------+
+  Bulk cap     Decoupling cap
+  near input   at each VCC pin
+```
+
 ## The RC Circuit: Charging and Discharging
 
 <InArticleAd />
 
 
 When you connect a resistor in series with a capacitor and apply a voltage, the capacitor charges gradually. This is the RC circuit, and its behavior is governed by the time constant.
+
+```text
+     SW
+VCC --/ --+--[R]--+-- Vc
+           |       |
+          (charge  [C]
+           path)   |
+                  GND
+
+  Close SW: C charges through R
+  Open SW:  C holds its voltage
+```
 
 ### Time Constant
 
@@ -205,6 +230,19 @@ Series capacitors are less common in practice, but they appear in voltage multip
 
 
 An RC circuit naturally acts as a filter. When a resistor is connected in series and a capacitor to ground, the circuit passes low-frequency signals and attenuates high-frequency signals. This is a low-pass filter.
+
+```text
+            [R] 10K
+Vin o---+--/\/\/--+---o Vout
+                  |
+                [C] 100nF
+                  |
+                 GND
+
+  fc = 1 / (2*pi*R*C)
+     = 1 / (2*pi*10K*100nF) = 159 Hz
+  Low freqs pass, high freqs blocked
+```
 
 The cutoff frequency is:
 

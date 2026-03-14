@@ -66,21 +66,25 @@ In astable mode, the 555 generates a continuous square wave without any external
 
 ### Circuit
 
-```
-VCC ──┬───────────────────── Pin 8 (VCC)
-      │
-      ├── R_A ──┬── Pin 7 (DISCHARGE)
-      │         │
-      │         ├── R_B ──┬── Pin 6 (THRESHOLD)
-      │         │         ├── Pin 2 (TRIGGER)
-      │         │         │
-      │         │         C ── GND
-      │         │
-      ├──────── Pin 4 (RESET) [tied to VCC]
-      │
-      ├── 10nF ── Pin 5 (CONTROL) ── GND
-      │
-      └── Pin 3 (OUTPUT) ── Load
+```text
+  VCC (+5V)
+   |
+   +---[Ra] 1K---+---pin7 (DISCH)
+   |              |
+   |           [Rb] 68K
+   |              |
+   +--pin8 (VCC)  +---pin6 (THRESH)
+   |              +---pin2 (TRIG)
+   +--pin4 (RST)  |
+   |            [C] 10nF
+   |              |
+   |             GND
+   |
+   +--10nF--pin5 (CTRL)--GND
+   |
+   +--pin3 (OUT)---> to buzzer/LED
+   |
+  pin1 (GND)
 ```
 
 ### Timing Equations
@@ -130,19 +134,25 @@ In monostable mode, the 555 produces a single output pulse of a defined duration
 
 ### Circuit
 
-```
-VCC ──┬── R ──┬── Pin 6 (THRESHOLD)
-      │       │   Pin 7 (DISCHARGE)
-      │       │
-      │       C ── GND
-      │
-      ├── Pin 8 (VCC)
-      ├── Pin 4 (RESET) [tied to VCC]
-      ├── 10nF ── Pin 5 (CONTROL) ── GND
-      │
-      └── Pin 3 (OUTPUT) ── Load
+```text
+  VCC
+   |
+   +--[R] 100K--+--pin6 (THRESH)
+   |             +--pin7 (DISCH)
+   +--pin8       |
+   +--pin4     [C] 10uF
+   |             |
+   |            GND
+   +--10nF--pin5--GND
+   |
+   +--pin3 (OUT)---> LED + 220R
+   |
+  pin1 (GND)
 
-Pin 2 (TRIGGER) ── pulled LOW briefly to start
+  pin2 (TRIG) <--- button to GND
+  (10K pull-up to VCC)
+
+  t_pulse = 1.1 x R x C = 1.1s
 ```
 
 ### Timing Equation
@@ -196,12 +206,21 @@ The crystal acts as a very high-Q (quality factor) resonant circuit. The Q facto
 
 A crystal typically connects between two pins of a microcontroller's oscillator circuit, with two small load capacitors to ground:
 
-```
-MCU OSC_IN ──┬── Crystal ──┬── MCU OSC_OUT
-             │             │
-             C_L1          C_L2
-             │             │
-            GND           GND
+```text
+         ┌--------┐
+         |  MCU   |
+  OSC_IN |---+    |
+         |   |    |
+         | XTAL 8MHz
+         |   |    |
+ OSC_OUT |---+    |
+         |        |
+         └--------┘
+  OSC_IN--+--[XTAL]--+--OSC_OUT
+          |           |
+       [CL1] 20pF  [CL2] 20pF
+          |           |
+         GND         GND
 ```
 
 The load capacitor values (typically 12 to 22 pF) are specified in the crystal datasheet. Using wrong values shifts the oscillation frequency slightly.

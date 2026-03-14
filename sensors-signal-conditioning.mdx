@@ -98,12 +98,20 @@ The NTC (Negative Temperature Coefficient) thermistor is the most common tempera
 
 The simplest thermistor circuit uses a fixed resistor and the thermistor in a voltage divider:
 
-```
-VCC ── R_fixed ──┬── V_out (to ADC)
-                 │
-                 R_thermistor
-                 │
-                GND
+```text
+    VCC (3.3V)
+      |
+    [Rf] 10K (fixed)
+      |
+      +------> Vout (to ADC)
+      |
+    [NTC] 10K at 25C
+      |
+     GND
+
+  Cold (0C):  NTC=27K, Vout=2.42V
+  Room (25C): NTC=10K, Vout=1.65V
+  Hot (50C):  NTC=3.6K, Vout=0.87V
 ```
 
 $$V_{out} = V_{CC} \times \frac{R_{thermistor}}{R_{fixed} + R_{thermistor}}$$
@@ -172,16 +180,26 @@ For sensors with very small resistance changes (like strain gauges, which change
 
 ### Bridge Circuit
 
-```
-        VCC
-         │
-    ┌── R1 ──┬── R2 ──┐
-    │        │        │
-    │       V_a      V_b
-    │        │        │
-    └── R3 ──┴── R4 ──┘
-         │
-        GND
+```text
+            VCC (5V)
+             |
+       ┌-----+-----┐
+       |            |
+     [R1] 350     [R2] 350
+       |            |
+  Va --+            +-- Vb
+       |            |
+     [R3] Sensor  [R4] 350
+     (strain gauge)  |
+       |            |
+       └-----+-----┘
+             |
+            GND
+
+  Vbridge = Va - Vb
+  Balanced: Va = Vb, Vbridge = 0
+  Sensor change: small differential
+  output (millivolts)
 ```
 
 The bridge output voltage is the difference between the two midpoints:
@@ -318,6 +336,20 @@ This project combines a thermistor voltage divider, an op-amp buffer, a non-inve
 - RC low-pass at the output: $R = 3.3k\Omega$, $C = 100\,nF$
 - $f_c = \frac{1}{2\pi \times 3300 \times 0.0000001} = 482\,Hz$
 - This is adequate for temperature measurement (which changes slowly)
+
+```text
+  VCC         Buffer       Amplifier     Filter
+   |        ┌------┐     ┌------┐
+ [Rf]       |      |     |      |  [R]3.3K
+   +------->|+ OUT-+---->|+ OUT-+--/\/\--+->ADC
+   |        |      |     |      |        |
+ [NTC]   +->|- ---┘   +->|- ---┘    [C]100nF
+   |     |  └------┘   |  └------┘      |
+  GND    |  (LM358 A)  |  (LM358 B)    GND
+         |              |
+      (output to     [R1]+[Rf pot]
+       inv. input)    to GND
+```
 
 ### Build Steps
 

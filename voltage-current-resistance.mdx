@@ -116,6 +116,21 @@ If a wire splits into two branches carrying 10 mA and 15 mA, then 25 mA must be 
 
 ### Series Resistors
 
+```text
+    VCC
+     |
+   [R1]  1K
+     |
+   [R2]  2K
+     |
+   [R3]  3K
+     |
+    GND
+
+  R_total = R1 + R2 + R3 = 6K
+  Same current through all resistors
+```
+
 Resistors in series carry the same current, and their resistances add:
 
 $$R_{total} = R_1 + R_2 + R_3 + \cdots$$
@@ -123,6 +138,21 @@ $$R_{total} = R_1 + R_2 + R_3 + \cdots$$
 The voltage divides across them proportionally to their resistance values. A larger resistor drops a larger share of the voltage.
 
 ### Parallel Resistors
+
+```text
+         VCC
+          |
+    ┌─────┼─────┐
+    |     |     |
+  [R1]  [R2]  [R3]
+  1K    2K    3K
+    |     |     |
+    └─────┼─────┘
+          |
+         GND
+
+  Same voltage across all resistors
+```
 
 Resistors in parallel have the same voltage across them, and the total resistance is calculated by:
 
@@ -172,6 +202,21 @@ A 1/4 watt resistor would smoke immediately. Always check power dissipation.
 
 
 A voltage divider is two resistors in series that produce an output voltage that is a fraction of the input voltage. This is one of the most common circuits in all of electronics.
+
+```text
+    Vin (5V)
+      |
+    [R1]  10K
+      |
+      +-----> Vout
+      |
+    [R2]  10K
+      |
+     GND
+
+  Vout = Vin x R2 / (R1 + R2)
+       = 5V x 10K / 20K = 2.5V
+```
 
 $$V_{out} = V_{in} \times \frac{R_2}{R_1 + R_2}$$
 

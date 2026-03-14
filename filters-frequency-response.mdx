@@ -60,12 +60,17 @@ The simplest and most commonly used filter in embedded electronics is the RC low
 
 A resistor in series, followed by a capacitor to ground:
 
-```
-V_in ──── R ────┬──── V_out
-                │
-                C
-                │
+```text
+         [R]  10K
+Vin o---/\/\/---+---o Vout
+                |
+              [C] 15nF
+                |
                GND
+
+  Low freq: C is open, Vout = Vin
+  High freq: C is short, Vout = 0
+  fc = 1/(2*pi*10K*15nF) = 1061 Hz
 ```
 
 ### Cutoff Frequency
@@ -142,12 +147,17 @@ $$dB = 20 \log_{10}\left(\frac{V_{out}}{V_{in}}\right)$$
 
 Swap the resistor and capacitor positions to get a high-pass filter:
 
-```
-V_in ──── C ────┬──── V_out
-                │
-                R
-                │
+```text
+         [C]  15nF
+Vin o---||------+---o Vout
+                |
+              [R] 10K
+                |
                GND
+
+  Low freq: C is open, Vout = 0
+  High freq: C is short, Vout = Vin
+  fc = 1/(2*pi*10K*15nF) = 1061 Hz
 ```
 
 ### Cutoff Frequency
@@ -241,12 +251,17 @@ Close enough to 500 Hz. This single-pole filter provides -20 dB/decade roll-off.
 
 A second-order filter uses two RC stages in series, providing -40 dB/decade roll-off (twice as steep as first-order):
 
-```
-V_in ── R1 ──┬── R2 ──┬── V_out
-             │        │
-             C1       C2
-             │        │
-            GND      GND
+```text
+       [R1] 3.3K    [R2] 33K
+Vin o-/\/\/--+---o-/\/\/--+---o Vout
+             |            |
+           [C1] 100nF   [C2] 10nF
+             |            |
+            GND          GND
+
+  Stage 1          Stage 2
+  R2 >> R1 to reduce loading
+  Roll-off: -40 dB/decade
 ```
 
 The cutoff frequency of the cascade is not simply the individual cutoff frequency. Due to loading between stages, the effective cutoff is lower:
