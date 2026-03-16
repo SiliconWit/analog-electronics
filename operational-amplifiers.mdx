@@ -25,7 +25,7 @@ import { Card, CardGrid, Badge, Steps, LinkButton, FileTree } from '@astrojs/sta
 
 import AnalogElectronicsComments from '../../../../components/analog-electronics/AnalogElectronicsComments.astro';
 
-An operational amplifier (op-amp) is an integrated circuit that amplifies the voltage difference between its two inputs. With just a few external resistors, you can build amplifiers, buffers, comparators, filters, and signal conditioning circuits. The op-amp is arguably the most versatile building block in analog electronics. If transistors are individual bricks, an op-amp is a pre-assembled wall section: faster to use and more reliable for most applications. #AnalogElectronics #OpAmps #SignalConditioning
+Building an amplifier from discrete transistors requires careful biasing, multiple stages, and resistor networks that drift with temperature. Get the bias wrong and the output clips or distorts; change the transistor and the whole design shifts. An operational amplifier packages all of that complexity into a single IC with predictable, datasheet-guaranteed behavior. With just two external resistors you set the gain, and the circuit works the same whether you use a 5-cent LM358 or a precision OPA2277. In this lesson you will learn five essential op-amp configurations, from inverting amplifiers to comparators, and build a thermistor signal conditioning circuit that maps a weak, nonlinear sensor voltage to the full 0 to 3.3 V range of a microcontroller ADC. #AnalogElectronics #OpAmps #SignalConditioning
 
 ## The Ideal Op-Amp
 
