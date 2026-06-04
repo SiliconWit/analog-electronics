@@ -456,6 +456,10 @@ The best approach combines both: hardware filtering removes noise before the ADC
 - **Ignoring self-heating**: Passing too much current through a thermistor heats it up, shifting the reading. Keep the excitation current low (below 1 mA for most NTC thermistors).
 </Card>
 
+:::tip[Instrument it]
+Conditioning is what separates a number you can trust from a noisy guess, and it matters most exactly where monitoring is useful: a thermocouple on a motor metres from the controller, a strain gauge on a vibrating frame, a sensor across a noisy plant floor. Amplify and filter at the source, and use a 4-20 mA current loop rather than a raw voltage over a long run, so the reading survives the journey. A clean signal into an [MCU](/education/sensor-actuator-interfacing-stm32/) is one you can [act on with confidence](https://siliconwit.io); a noisy one trips false alarms and gets ignored.
+:::
+
 ## How This Connects to Embedded Systems
 
 <InArticleAd />
