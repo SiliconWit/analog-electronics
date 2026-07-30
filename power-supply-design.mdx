@@ -1,7 +1,7 @@
 ---
 title: "Power Supply Design"
 description: "Design reliable power supplies for microcontroller projects. Compare linear and switching regulators, understand LDO dropout voltage, calculate ripple and decoupling requirements. Build a 3.3V regulated supply from a 9V battery."
-contributors: "sam-macharia"
+contributors: "sam-macharia,ian-kigen"
 pubDate: 2026-03-07
 tags: ["analog-electronics", "power-supply", "voltage-regulator", "ldo", "lm1117", "decoupling", "ripple"]
 excerpt: "Every MCU board needs clean, stable power. Learn the differences between linear and switching regulators, how to select an LDO, and why decoupling capacitors matter. Build a 3.3V supply from a 9V battery using an LM1117."
@@ -396,6 +396,10 @@ If you have a 7805, build the same circuit (noting the different pinout: Input, 
 - **Using an electrolytic capacitor for high-frequency decoupling**: Electrolytic capacitors have high internal inductance (ESL) and are ineffective above a few hundred kHz. Always pair them with a ceramic capacitor for full-spectrum decoupling.
 - **Forgetting polarity on electrolytic capacitors**: Reversed electrolytics can fail dramatically. Double-check before applying power.
 </Card>
+
+:::tip[Instrument it]
+A supply that looks fine at switch-on can sag, ripple, or overheat under real load, and you cannot see any of that without measuring it. Watch the rail with an INA219 or INA226 (each reports bus voltage and current over I2C) and stick an NTC thermistor or a small temperature sensor on the regulator tab to catch thermal runaway. An [ESP32 or STM32](/education/sensor-actuator-interfacing-stm32/) logs voltage, current, and temperature together, and siliconwit.io can [trip an alert or shed the load](https://siliconwit.io) the moment the rail droops or the regulator runs hot.
+:::
 
 ## How This Connects to Embedded Systems and PCB Design
 
